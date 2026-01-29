@@ -1,0 +1,24 @@
+pipeline_id: pipeline__pattern__task_group
+schedule_interval: "@daily"
+catchup: false
+
+default_args:
+  owner: "airflow"
+
+tasks:
+  - task_id: start
+    task_type: EmptyOperator
+    
+  - task_id: extract
+    task_type: EmptyOperator
+    task_group_id: "ingest_group"
+    upstream_task_ids: ["start"]
+
+  - task_id: load
+    task_type: EmptyOperator
+    task_group_id: "ingest_group"
+    upstream_task_ids: ["extract"]
+    
+  - task_id: end
+    task_type: EmptyOperator
+    upstream_task_ids: ["load"]

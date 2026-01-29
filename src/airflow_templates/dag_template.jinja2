@@ -1,0 +1,72 @@
+"""
+Generated DAG: {{ pipeline.pipeline_id }}
+"""
+from airflow import DAG
+import pendulum
+from datetime import datetime, timedelta
+
+# Operator Imports
+{% for class_name, import_path in imports %}
+from {{ import_path }} import {{ class_name }}
+{% endfor %}
+
+# Default arguments
+default_args = {
+    'owner': '{{ pipeline.default_args.owner }}',
+    'retries': {{ pipeline.default_args.retries }},
+    'retry_delay': timedelta(seconds={{ pipeline.default_args.retry_delay_sec }}),
+    {% if pipeline.default_args.start_date %}
+    'start_date': pendulum.parse('{{ pipeline.default_args.start_date }}'),
+    {% endif %}
+}
+
+# Pipeline Definition
+with DAG(
+    dag_id='{{ pipeline.pipeline_id }}',
+    default_args=default_args,
+    schedule_interval='{{ pipeline.schedule_interval }}',
+    catchup={{ pipeline.catchup }},
+    tags={{ pipeline.tags }},
+) as dag:
+
+    # Task Definitions
+    
+    # 1. Root Tasks (No Group)
+    {% if None in grouped_tasks %}
+    {% for task in grouped_tasks[None] %}
+    {{ task.task_id }} = {{ task.task_type }}(
+        task_id='{{ task.task_id }}',
+        {% if task.task_type == 'PythonOperator' %}
+        python_callable=lambda: print("Executing {{ task.callable_name }}"), 
+        {% endif %}
+        {% if task.op_kwargs %}
+        op_kwargs={{ task.op_kwargs }},
+        {% endif %}
+    )
+    {% endfor %}
+    {% endif %}
+
+    # 2. Task Groups
+    {% for group_id, tasks in grouped_tasks.items() %}
+    {% if group_id is not none %}
+    with TaskGroup(group_id='{{ group_id }}', tooltip='Task Group: {{ group_id }}') as {{ group_id }}:
+        {% for task in tasks %}
+        {{ task.task_id }} = {{ task.task_type }}(
+            task_id='{{ task.task_id }}',
+            {% if task.task_type == 'PythonOperator' %}
+            python_callable=lambda: print("Executing {{ task.callable_name }}"), 
+            {% endif %}
+            {% if task.op_kwargs %}
+            op_kwargs={{ task.op_kwargs }},
+            {% endif %}
+        )
+        {% endfor %}
+    {% endif %}
+    {% endfor %}
+
+    # Dependencies
+    {% for task in pipeline.tasks if task.upstream_task_ids %}
+    {% for upstream in task.upstream_task_ids %}
+    {{ upstream }} >> {{ task.task_id }}
+    {% endfor %}
+    {% endfor %}

@@ -1,0 +1,93 @@
+name: CI Contract
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  pre-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # Add src to python path for testing without installing
+          echo "PYTHONPATH=$PYTHONPATH:$(pwd)/src" >> $GITHUB_ENV
+          
+      - name: Lint with Black
+        run: |
+          black --check src tests dags pipelines
+          
+      - name: Unit & Golden Tests
+        run: |
+          pytest tests/unit tests/golden
+          
+      - name: Schema Validation (CLI Validate)
+        run: |
+          # Validate all example pipelines
+          for file in pipelines/yaml/*.yaml; do
+            python -m python_to_dag validate --input "$file"
+          done
+
+  post-gate:
+    needs: pre-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          
+      - name: Install dependencies (Airflow)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install apache-airflow==2.7.3
+          echo "PYTHONPATH=$PYTHONPATH:$(pwd)/src" >> $GITHUB_ENV
+          
+      - name: Build All DAGs
+        run: |
+          mkdir -p dags_build
+          for file in pipelines/yaml/*.yaml; do
+            python -m python_to_dag build --input "$file" --out dags_build/
+          done
+          
+      - name: DagBag Import Test
+        run: |
+          # Create a simple script to verify importability
+          cat <<EOF > test_import.py
+          import sys
+          import os
+          from airflow.models import DagBag
+          
+          # Add build dir to DAGs folder consideration? 
+          # DagBag takes a path.
+          
+          dag_path = os.path.join(os.getcwd(), 'dags_build')
+          print(f"Testing DagBag import from: {dag_path}")
+          
+          dagbag = DagBag(dag_folder=dag_path, include_examples=False)
+          
+          if dagbag.import_errors:
+              print(f"Import errors found: {len(dagbag.import_errors)}")
+              for filename, error in dagbag.import_errors.items():
+                  print(f"File: {filename}")
+                  print(f"Error: {error}")
+              sys.exit(1)
+          else:
+              print("No import errors. Success!")
+          EOF
+          
+          python test_import.py

@@ -1,0 +1,27 @@
+pipeline_id: pipeline__example__data_processing
+schedule_interval: "@daily"
+catchup: false
+tags: ["example", "data"]
+
+default_args:
+  owner: "data_team"
+  retries: 3
+  retry_delay_sec: 600
+  start_date: "2023-01-01"
+
+tasks:
+  - task_id: extract_data
+    task_type: python
+    callable_name: extract
+    op_kwargs:
+      source: "api"
+
+  - task_id: transform_data
+    task_type: python
+    callable_name: transform
+    upstream_task_ids: ["extract_data"]
+
+  - task_id: load_data
+    task_type: python
+    callable_name: load
+    upstream_task_ids: ["transform_data"]

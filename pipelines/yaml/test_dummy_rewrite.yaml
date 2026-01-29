@@ -1,0 +1,14 @@
+pipeline_id: pipeline__test__dummy_rewrite
+schedule_interval: "@once"
+catchup: false
+
+default_args:
+  owner: "test"
+
+tasks:
+  - task_id: legacy_dummy
+    task_type: DummyOperator
+  
+  - task_id: legacy_python
+    task_type: PythonOperator
+    upstream_task_ids: ["legacy_dummy"]
