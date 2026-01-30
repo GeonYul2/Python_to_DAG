@@ -22,5 +22,5 @@ def test_generator_creates_output(tmp_path):
 
     assert output_path.exists()
     content = output_path.read_text("utf-8")
-    assert "dag_id='pipeline__test__mk1'" in content
+    assert 'dag_id="pipeline__test__mk1"' in content
     assert "t1 >> t2" in content
