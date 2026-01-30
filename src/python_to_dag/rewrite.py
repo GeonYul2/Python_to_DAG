@@ -41,9 +41,9 @@ class RewriteEngine:
         Returns the modern import path for standard operators.
         """
         if operator_class == "EmptyOperator":
-            return "airflow.operators.empty"
+            return "airflow.providers.standard.operators.empty"
         if operator_class == "PythonOperator":
-            return "airflow.operators.python"
+            return "airflow.providers.standard.operators.python"
 
         # Fallback / TODO: Add more mappings
-        return "airflow.operators.python"  # Default for now as we mostly support Python
+        return "airflow.providers.standard.operators.python"  # Default for now as we mostly support Python

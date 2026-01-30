@@ -24,7 +24,7 @@ default_args = {
 with DAG(
     dag_id='{{ pipeline.pipeline_id }}',
     default_args=default_args,
-    schedule_interval='{{ pipeline.schedule_interval }}',
+    schedule='{{ pipeline.schedule_interval }}',
     catchup={{ pipeline.catchup }},
     tags={{ pipeline.tags }},
 ) as dag:

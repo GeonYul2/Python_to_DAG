@@ -36,7 +36,7 @@ class PipelineGenerator:
         # Ensure imports include TaskGroup if needed
         has_task_group = any(gid is not None for gid in grouped_tasks)
         if has_task_group:
-            imports.add(("TaskGroup", "airflow.utils.task_group"))
+            imports.add(("TaskGroup", "airflow.sdk"))
 
         # Render
         code = template.render(
