@@ -38,8 +38,14 @@ tasks:
     generated_code = out_file.read_text(encoding="utf-8")
 
     # Check Imports
-    assert "from airflow.providers.standard.operators.empty import EmptyOperator" in generated_code
-    assert "from airflow.providers.standard.operators.python import PythonOperator" in generated_code
+    assert (
+        "from airflow.providers.standard.operators.empty import EmptyOperator"
+        in generated_code
+    )
+    assert (
+        "from airflow.providers.standard.operators.python import PythonOperator"
+        in generated_code
+    )
 
     # Check Instantiation
     assert "t1 = EmptyOperator(" in generated_code
