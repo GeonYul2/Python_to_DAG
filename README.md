@@ -20,6 +20,7 @@
 *   **표준 강제**: 멱등성(Idempotency), 재시도(Retries), 표준 로깅(Correlation ID)이 자동으로 적용됩니다.
 *   **미래 호환성**: Airflow 2에서 3으로(혹은 그 이후로) 넘어갈 때, 100개의 DAG 파일을 고치는 대신 **생성기 하나만 업데이트**하면 됩니다.
 *   **친절한 문서화**: 생성된 DAG에는 어린아이도 이해할 수 있는 **Kindergarten Guide** 주석이 자동으로 포함되도록 권장합니다.
+*   **Dataset 기반 디커플링**: Airflow 2.4+의 Dataset 기능을 지원하여, Producer/Consumer 패턴으로 파이프라인을 분리할 수 있습니다.
 
 ## ✨ 주요 기능
 

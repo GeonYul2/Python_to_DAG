@@ -51,6 +51,7 @@ class PipelineParser:
         pipeline = PipelineIR(
             pipeline_id=data.get("pipeline_id"),
             schedule_interval=data.get("schedule_interval"),
+            schedule_datasets=data.get("schedule_datasets", []),
             default_args=defaults,
             tasks=tasks_ir,
             catchup=data.get("catchup", False),

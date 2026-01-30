@@ -25,6 +25,9 @@ class TaskIR(BaseModel):
     task_group_id: Optional[str] = Field(
         None, description="ID of the TaskGroup this task belongs to"
     )
+    outlets: List[str] = Field(
+        default_factory=list, description="List of dataset URIs to update (e.g. dataset://my-data)"
+    )
 
     # Contract / Resources (Placeholder for now)
     # data_contract: Optional[DataContractIR] = None
@@ -47,6 +50,9 @@ class PipelineDefaultIR(BaseModel):
 class PipelineIR(BaseModel):
     pipeline_id: str
     schedule_interval: Optional[str] = "@daily"
+    schedule_datasets: List[str] = Field(
+        default_factory=list, description="List of upstream dataset URIs to trigger on"
+    )
     default_args: PipelineDefaultIR = Field(default_factory=PipelineDefaultIR)
     tasks: List[TaskIR] = Field(default_factory=list)
     catchup: bool = False

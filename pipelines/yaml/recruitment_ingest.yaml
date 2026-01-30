@@ -1,0 +1,18 @@
+pipeline_id: "pipeline__recruitment_ingest"
+schedule_interval: "0 9 * * *"
+default_args:
+  owner: "geon_yul"
+  retries: 2
+  retry_delay_sec: 300
+
+tasks:
+  - task_id: "crawl_jobs"
+    task_type: "PythonOperator"
+    callable_name: "src.pipeline_wrappers.run_crawl_json"
+    
+  - task_id: "update_embeddings"
+    task_type: "PythonOperator"
+    callable_name: "src.pipeline_wrappers.run_update_embeddings"
+    upstream_task_ids: ["crawl_jobs"]
+    # Triggers the dataset update after successful embedding
+    outlets: ["dataset://recruitment/jobs"]

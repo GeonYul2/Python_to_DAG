@@ -23,6 +23,13 @@ class PipelineGenerator:
         imports = set()
         for task in pipeline.tasks:
             imports.add((task.task_type, RewriteEngine.get_import_path(task.task_type)))
+            # Add Dataset import if used
+            if task.outlets:
+                imports.add(("Dataset", "airflow.datasets"))
+        
+        # Add Dataset import if schedule uses datasets
+        if pipeline.schedule_datasets:
+            imports.add(("Dataset", "airflow.datasets"))
 
         # P2-4: Organize tasks by Group
         # Structure: { 'group_id': [tasks...], None: [root_tasks...] }

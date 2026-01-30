@@ -24,7 +24,11 @@ default_args = {
 with DAG(
     dag_id='{{ pipeline.pipeline_id }}',
     default_args=default_args,
+    {% if pipeline.schedule_datasets %}
+    schedule=[{% for ds in pipeline.schedule_datasets %}Dataset('{{ ds }}'), {% endfor %}],
+    {% else %}
     schedule='{{ pipeline.schedule_interval }}',
+    {% endif %}
     catchup={{ pipeline.catchup }},
     tags={{ pipeline.tags }},
 ) as dag:
@@ -38,6 +42,9 @@ with DAG(
         task_id='{{ task.task_id }}',
         {% if task.task_type == 'PythonOperator' %}
         python_callable=lambda: print("Executing {{ task.callable_name }}"), 
+        {% endif %}
+        {% if task.outlets %}
+        outlets=[{% for outlet in task.outlets %}Dataset('{{ outlet }}'), {% endfor %}],
         {% endif %}
         {% if task.op_kwargs %}
         op_kwargs={{ task.op_kwargs }},
@@ -55,6 +62,9 @@ with DAG(
             task_id='{{ task.task_id }}',
             {% if task.task_type == 'PythonOperator' %}
             python_callable=lambda: print("Executing {{ task.callable_name }}"), 
+            {% endif %}
+            {% if task.outlets %}
+            outlets=[{% for outlet in task.outlets %}Dataset('{{ outlet }}'), {% endfor %}],
             {% endif %}
             {% if task.op_kwargs %}
             op_kwargs={{ task.op_kwargs }},
