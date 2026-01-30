@@ -1,4 +1,7 @@
 # PYTHON_TO_DAG (with Antigravity) — Production-Grade Spec Pack
+![CI Contract](https://github.com/GeonYul2/Python_to_DAG/actions/workflows/ci.yml/badge.svg)
+
+> **Target Environment**: Airflow 3.x (Latest Stable) / Python 3.11+
 
 이 저장소는 **Python 기반 파이프라인을 Airflow DAG로 일관되게 변환/생성**하기 위한 설계 문서/스펙/운영 가이드를 포함합니다.  
 개발은 **Antigravity(구현)** + **ChatGPT(기획/명세/가드레일)**의 코워크 형태로 진행합니다.
