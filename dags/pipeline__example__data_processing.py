@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 # Operator Imports
 
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 
 
 # Default arguments
@@ -22,7 +22,7 @@ default_args = {
 with DAG(
     dag_id="pipeline__example__data_processing",
     default_args=default_args,
-    schedule_interval="@daily",
+    schedule="@daily",
     catchup=False,
     tags=["example", "data"],
 ) as dag:

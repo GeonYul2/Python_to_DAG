@@ -7,5 +7,11 @@ def test_rewrite_dummy_to_empty():
 
 
 def test_rewrite_python_import_path():
-    assert RewriteEngine.get_import_path("PythonOperator") == "airflow.operators.python"
-    assert RewriteEngine.get_import_path("EmptyOperator") == "airflow.operators.empty"
+    assert (
+        RewriteEngine.get_import_path("PythonOperator")
+        == "airflow.providers.standard.operators.python"
+    )
+    assert (
+        RewriteEngine.get_import_path("EmptyOperator")
+        == "airflow.providers.standard.operators.empty"
+    )
