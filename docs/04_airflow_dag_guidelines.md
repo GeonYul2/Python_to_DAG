@@ -61,3 +61,13 @@
 - 실패 시 on_failure_callback에서:
   - pipeline_id, dag_id, task_id, run_id, exception 요약
   - 재시도 가능 여부 힌트
+---
+
+## 8) Friendly Documentation (Kindergarten Guide)
+- **원칙**: 모든 DAG은 '어린아이도 이해할 수 있는' 설명을 포함해야 한다.
+- **포맷**: 파일 최상단에 주석 블록(Triple Quotes)으로 작성.
+- **필수 포함 내용**:
+  - **비유(Analogy)**: DAG을 지도, 로봇, 공장 등으로 비유
+  - **역할(Role)**: Operators는 도구/로봇으로 표현
+  - **흐름(Flow)**: 의존성은 순서/약속으로 설명
+- **목표**: 비개발자/주니어 엔지니어가 코드만 보고도 흐름을 100% 이해할 것.
